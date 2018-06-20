@@ -18,9 +18,14 @@ class ListNotesTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        notes = CoreDataHelper.retrieveNotes().reversed()
+        
     }
     
     @IBAction func unwindForSegue(_ segue: UIStoryboardSegue){
+        
+        notes = CoreDataHelper.retrieveNotes().reversed()
+        
     
     }
     
@@ -34,14 +39,17 @@ class ListNotesTableViewController: UITableViewController {
         let note = notes[indexPath.row]
         
         cell.noteTitleLabel.text = note.title
-        cell.lastModifiedTimeStampLabel.text = note.modificationTime.convertToString()
+        cell.lastModifiedTimeStampLabel.text = note.modificationTime?.convertToString() ?? ""
         
         return cell
     }
     
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            notes.remove(at: indexPath.row)
+            let noteToRemove = notes[indexPath.row]
+            CoreDataHelper.deleteNote(note: noteToRemove)
+            
+            notes = CoreDataHelper.retrieveNotes().reversed()
         }
     }
     

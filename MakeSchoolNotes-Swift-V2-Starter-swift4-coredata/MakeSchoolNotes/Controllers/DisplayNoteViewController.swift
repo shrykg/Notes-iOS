@@ -33,8 +33,8 @@ class DisplayNoteViewController: UIViewController {
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let identifier = segue.identifier,
-            let destination = segue.destination as? ListNotesTableViewController
+        guard let identifier = segue.identifier
+        
             else {return}
         
         switch identifier {
@@ -47,17 +47,18 @@ class DisplayNoteViewController: UIViewController {
             note?.modificationTime = Date()
             
             
-            destination.tableView.reloadData()
+            CoreDataHelper.saveNote()
             
             // creating new note
         case "save" where note == nil:
             
-            let note = Note()
+            let note = CoreDataHelper.newNote()
+            
             note.title = titleTextField.text ?? ""
             note.content = contextTextView.text ?? ""
             note.modificationTime = Date()
             
-            destination.notes.insert(note, at: 0)
+            CoreDataHelper.saveNote()
             
         case "cancel":
             print("transition to list via cancel")
