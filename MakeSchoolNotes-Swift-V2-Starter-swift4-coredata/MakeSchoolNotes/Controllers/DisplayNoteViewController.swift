@@ -14,30 +14,51 @@ class DisplayNoteViewController: UIViewController {
     
     @IBOutlet weak var contextTextView: UITextView!
     
+    var note: Note?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        titleTextField.text = ""
-        contextTextView.text = ""
+        if let note = note {
+            titleTextField.text = note.title
+            contextTextView.text = note.content
+        } else {
+            titleTextField.text = ""
+            contextTextView.text = ""
+        }
     }
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let identifier = segue.identifier else {return}
+        guard let identifier = segue.identifier,
+            let destination = segue.destination as? ListNotesTableViewController
+            else {return}
         
         switch identifier {
-        case "save":
+            // updating existing note
+        case "save" where note != nil:
+            
+            
+            note?.title = titleTextField.text ?? ""
+            note?.content = contextTextView.text ?? ""
+            note?.modificationTime = Date()
+            
+            
+            destination.tableView.reloadData()
+            
+            // creating new note
+        case "save" where note == nil:
             
             let note = Note()
             note.title = titleTextField.text ?? ""
             note.content = contextTextView.text ?? ""
             note.modificationTime = Date()
             
-            let destination = segue.destination as! ListNotesTableViewController
-            destination.notes.append(note)
+            destination.notes.insert(note, at: 0)
+            
         case "cancel":
             print("transition to list via cancel")
         default:

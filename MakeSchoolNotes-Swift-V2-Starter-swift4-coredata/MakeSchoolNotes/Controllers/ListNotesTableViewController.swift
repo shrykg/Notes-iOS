@@ -39,13 +39,25 @@ class ListNotesTableViewController: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            notes.remove(at: indexPath.row)
+        }
+    }
+    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         guard let identifier = segue.identifier else {return}
         
         switch identifier{
         case "displayNote":
             print("transitioning to detailvc")
-        
+            guard let indexPath = tableView.indexPathForSelectedRow else{return}
+            
+            let note = notes[indexPath.row]
+            let destination = segue.destination as! DisplayNoteViewController
+            destination.note = note
+        case "addNote":
+            print("add new note button pressed")
         default:
             print("no such segue")
             
